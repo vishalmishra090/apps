@@ -1,5 +1,6 @@
 import last from 'lodash/last';
 import get from 'lodash/get';
+import debounce from 'lodash/debounce';
 import uniqBy from 'lodash/uniqBy';
 import sortBy from 'lodash/sortBy';
 import { dataTransformer, productsToVariantsTransformer } from './dataTransformer';
@@ -66,10 +67,10 @@ class Pagination {
   async _fetchMoreProducts(search) {
     const noProductsFetchedYet = this.products.length === 0;
     const nextProducts = noProductsFetchedYet
-      ? await this._fetchProducts(search)
+      ? await this._debouncedFetch(search)
       : await this._fetchNextPage(this.products);
     this.hasNextProductPage =
-      nextProducts.length > 0 && nextProducts.every(product => product.hasNextPage);
+      nextProducts && nextProducts.length > 0 && nextProducts.every(product => product.hasNextPage);
 
     const nextVariants = productsToVariantsTransformer(nextProducts);
     this.products = uniqBy([...this.products, ...nextProducts], 'id');
@@ -89,9 +90,11 @@ class Pagination {
       first: PER_PAGE,
       sortBy: 'TITLE',
       reverse: true,
-      ...(search.length && query)
+      ...(search.length && query),
     });
   }
+
+  _debouncedFetch = asyncDebounce(this._fetchProducts.bind(this), 200);
 
   /**
    * This method is used when the user has already fetched a batch of products
@@ -107,6 +110,18 @@ class Pagination {
     this.freshSearch = true;
   }
 }
+
+const asyncDebounce = (func, wait) => {
+  const debounced = debounce((resolve, reject, args) => {
+    func(...args)
+      .then(resolve)
+      .catch(reject);
+  }, wait);
+  return (...args) =>
+    new Promise((resolve, reject) => {
+      debounced(resolve, reject, args);
+    });
+};
 
 const makePagination = async sdk => {
   const pagination = new Pagination(sdk);
