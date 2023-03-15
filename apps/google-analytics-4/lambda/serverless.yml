@@ -16,6 +16,7 @@ custom:
     endpointType: 'edge'
     securityPolicy: tls_1_2
   serverless-offline:
+    host: 0.0.0.0
     httpPort: 8080
 
 provider:
