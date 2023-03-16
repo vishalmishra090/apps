@@ -20,6 +20,7 @@ custom:
     httpPort: 8080
   tableName: sls-apps-ga4-backend-${opt:stage, 'dev'}-SharedCredentialsTable
   dynamoEndpoint: http://dynamodb:8000
+  secretKey:  ${file(./config/serverless-env.${opt:stage, 'dev'}.yml):secretKey}
 
 provider:
   name: aws
@@ -46,6 +47,7 @@ provider:
   environment:
     SHARED_CREDENTIALS_TABLE: ${self:custom.tableName}
     DYNAMO_ENDPOINT: ${self:custom.dynamoEndpoint}
+    SECRET_KEY: ${self:custom.secretKey}
 
 functions:
   api:

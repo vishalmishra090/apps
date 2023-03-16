@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { RunReportParamsType } from '../types';
 import { GoogleApiService } from '../services/googleApiService';
+import { AwsApiService } from '../services/awsApiService';
 
 const ApiController = {
   credentials: (_req: Request, res: Response) => {
@@ -9,7 +10,26 @@ const ApiController = {
   },
 
   account_summaries: async (req: Request, res: Response, next: NextFunction) => {
-    // add serviceKey lookup
+    const awsApi = new AwsApiService()
+    const spaceId = req.get('x-contentful-space-id')
+    const sharedCredentialsId = `${spaceId}-${req.serviceAccountKeyId?.id!}`
+
+    const sharedCredentials = await awsApi.getSharedCredentials({
+      tableName: process.env.SHARED_CREDENTIALS_TABLE as string,
+      sharedCredentialsId,
+    });
+
+    if (!sharedCredentials) {
+      const data = await awsApi.saveSharedCredentials({
+        tableName: process.env.SHARED_CREDENTIALS_TABLE as string,
+        sharedCredentialsId,
+        serviceKey: req.serviceAccountKey!
+      });
+      console.log({ data })
+    } else {
+      console.log({ sharedCredentials })
+    }
+
 
     try {
       const serviceAccountKeyFile = req.serviceAccountKey;
@@ -25,6 +45,10 @@ const ApiController = {
       // pass to apiErrorHandler
       next(err);
     }
+
+
+    // console.log({ data })
+
   },
 
   run_report: async (req: Request, res: Response, next: NextFunction) => {

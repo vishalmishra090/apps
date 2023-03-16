@@ -1,10 +1,12 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { ServiceAccountKeyId } from '../types';
+import { decryptSharedCredentials, encryptSharedCredentials } from './awsApiUtils';
 
 export interface SharedCredentialsInput {
   tableName: string;
-  spaceId: string;
-  serviceKeyId: string;
+  sharedCredentialsId: string;
+  serviceKey?: object
 }
 
 export class AwsApiService {
@@ -22,27 +24,27 @@ export class AwsApiService {
       const command = new GetCommand({
         TableName:  input.tableName,
         Key: {
-          sharedCredentialsId: `${input.spaceId}-${input.serviceKeyId}`
+          sharedCredentialsId: input.sharedCredentialsId,
         }
       });
 
       const data = await this.dynamoDbClient.send(command)
 
-      return data.Item
+      return decryptSharedCredentials(data.Item?.value)
     } catch(err: any) {
       throw new Error(err)
     }
   }
 
   async saveSharedCredentials(input: SharedCredentialsInput) {
-    const hash = ''; // add bcryptjs
+    const hash = await encryptSharedCredentials(input.serviceKey!);
     
     try {
       const command =  new PutCommand({
         TableName: input.tableName,
         Item: {
-          sharedCredentialsId: `${input.serviceKeyId}-${input.spaceId}`,
-          serviceKey: hash, // store hash
+          sharedCredentialsId: input.sharedCredentialsId,
+          value: hash,
         }
       });
 
