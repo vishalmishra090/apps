@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { RunReportParamsType } from '../types';
 import { GoogleApiService } from '../services/googleApiService';
+import { AwsApiService } from '../services/awsApiService';
 
 const ApiController = {
   credentials: (_req: Request, res: Response) => {
@@ -9,14 +10,17 @@ const ApiController = {
   },
 
   account_summaries: async (req: Request, res: Response, next: NextFunction) => {
+    // add serviceKey lookup
+
     try {
       const serviceAccountKeyFile = req.serviceAccountKey;
-
+      
       if (serviceAccountKeyFile === undefined) {
         // intentional runtime error because the middleware already handles this. typescript
         // just doesn't realize
         throw new Error('missing service account key value');
       }
+      
 
       const googleApi = GoogleApiService.fromServiceAccountKeyFile(serviceAccountKeyFile);
       const result = await googleApi.listAccountSummaries();

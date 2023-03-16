@@ -19,6 +19,7 @@ custom:
     host: 0.0.0.0
     httpPort: 8080
   tableName: sls-apps-ga4-backend-${opt:stage, 'dev'}-SharedCredentialsTable
+  dynamoEndpoint: http://dynamodb:8000
 
 provider:
   name: aws
@@ -44,6 +45,7 @@ provider:
             - Fn::GetAtt: [ SharedCredentialsTable, Arn ]
   environment:
     SHARED_CREDENTIALS_TABLE: ${self:custom.tableName}
+    DYNAMO_ENDPOINT: ${self:custom.dynamoEndpoint}
 
 functions:
   api:
