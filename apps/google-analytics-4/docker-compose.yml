@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 services:
 
@@ -22,6 +22,20 @@ services:
       AWS_SECRET_ACCESS_KEY: local
     depends_on:
       - dynamodb
+
+  dynamodb_migrator:
+    image: amazon/aws-cli
+    container_name: app-dynamodb_migrator
+    working_dir: /home/dynamodblocal
+    command: dynamodb create-table --cli-input-json file://shared_credentials.json --endpoint-url http://dynamodb:8000
+    volumes:
+      - ./schema:/home/dynamodblocal
+    environment:
+      AWS_REGION: 'us-east-1'
+      AWS_ACCESS_KEY_ID: 'test'
+      AWS_SECRET_ACCESS_KEY: 'test'
+    depends_on:
+      - dynamodb
   
   lambda:
     build:
@@ -35,7 +49,7 @@ services:
       AWS_REGION: 'us-east-1'
       AWS_ACCESS_KEY_ID: 'test'
       AWS_SECRET_ACCESS_KEY: 'test'
-      DYNAMO_TABLE_NAME: sls-apps-slack-backend-dev-TokenTable
+      DYNAMO_TABLE_NAME: sls-apps-ga4-backend-dev-TokenTable
       DYNAMO_ENDPOINT: http://dynamodb:8000
     depends_on:
       - dynamodb
