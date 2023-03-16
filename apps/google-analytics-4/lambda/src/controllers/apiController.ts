@@ -45,10 +45,6 @@ const ApiController = {
       // pass to apiErrorHandler
       next(err);
     }
-
-
-    // console.log({ data })
-
   },
 
   run_report: async (req: Request, res: Response, next: NextFunction) => {

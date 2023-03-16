@@ -16,14 +16,3 @@ export async function decryptSharedCredentials(encrypted: string): Promise<objec
   decrypted += decipher.final('utf8');
   return JSON.parse(decrypted);
 }
-
-// const dataToEncrypt = {
-//   key1: 'value1',
-//   key2: 'value2',
-// };
-
-// const encryptedData = encrypt(dataToEncrypt);
-// console.log('Encrypted data:', encryptedData);
-
-// const decryptedData = decrypt(encryptedData);
-// console.log('Decrypted data:', decryptedData);

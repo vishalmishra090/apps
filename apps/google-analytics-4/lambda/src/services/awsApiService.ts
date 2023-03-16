@@ -1,6 +1,5 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
-import { ServiceAccountKeyId } from '../types';
 import { decryptSharedCredentials, encryptSharedCredentials } from './awsApiUtils';
 
 export interface SharedCredentialsInput {
@@ -13,10 +12,10 @@ export class AwsApiService {
     private dynamoDbClient: DynamoDBDocumentClient;
 
     constructor(client = new DynamoDBClient({
-        region: process.env.AWS_REGION,
-        endpoint: process.env.DYNAMO_ENDPOINT
+      region: process.env.AWS_REGION,
+      endpoint: process.env.DYNAMO_ENDPOINT
     })) {
-        this.dynamoDbClient = DynamoDBDocumentClient.from(client)
+      this.dynamoDbClient = DynamoDBDocumentClient.from(client)
     }
 
    async getSharedCredentials(input: SharedCredentialsInput) {
