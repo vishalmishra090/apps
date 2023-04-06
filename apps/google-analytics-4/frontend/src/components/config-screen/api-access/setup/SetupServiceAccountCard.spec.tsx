@@ -49,12 +49,12 @@ describe('Setup Google Service Account Details page', () => {
     await user.click(keyFileInputBox);
     await user.paste(JSON.stringify({ foo: 'bar' }));
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/Service Account Key/).getAttribute('aria-invalid')).toEqual(
-        'true'
-      );
-      expect(screen.getByText(/Error:/)).toBeInTheDocument();
-    });
+    // await waitFor(() => {
+    expect(await screen.getByLabelText(/Service Account Key/).getAttribute('aria-invalid')).toEqual(
+      'true'
+    );
+    expect(await screen.getByText(/Error:/)).toBeInTheDocument();
+    // });
   });
 
   it('renders a success state when valid input', async () => {
@@ -79,9 +79,11 @@ describe('Setup Google Service Account Details page', () => {
     await user.click(keyFileInputBox);
     await user.paste(JSON.stringify(validServiceKeyFile));
 
-    await waitFor(() => {
-      expect(screen.getByLabelText(/Service Account Key/).getAttribute('aria-invalid')).toBeNull();
-      expect(screen.getByText('Service account key file is valid JSON')).toBeInTheDocument();
-    });
+    // await waitFor(() => {
+    expect(
+      await screen.getByLabelText(/Service Account Key/).getAttribute('aria-invalid')
+    ).toBeNull();
+    expect(await screen.getByText('Service account key file is valid JSON')).toBeInTheDocument();
+    // });
   });
 });
