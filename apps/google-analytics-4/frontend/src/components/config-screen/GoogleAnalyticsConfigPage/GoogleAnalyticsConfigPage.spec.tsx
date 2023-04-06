@@ -31,7 +31,7 @@ export const apiPath = (path: string) => {
 
 describe('Google Analytics Page', () => {
   it('renders setup view', async () => {
-    await act(() => {
+    act(() => {
       render(<GoogleAnalyticsConfigPage />);
     });
 
@@ -43,7 +43,7 @@ describe('Google Analytics Page', () => {
 describe('Config Screen component (not installed)', () => {
   it('allows the app to be installed with a valid service key file', async () => {
     const user = userEvent.setup();
-    await act(() => {
+    act(() => {
       render(<GoogleAnalyticsConfigPage />);
     });
     const keyFileInputBox = screen.getByLabelText(/Service Account Key/i);
@@ -80,7 +80,7 @@ describe('Config Screen component (not installed)', () => {
 
   it('prevents the app from being installed with invalid service key file', async () => {
     const user = userEvent.setup();
-    await act(() => {
+    act(() => {
       render(<GoogleAnalyticsConfigPage />);
     });
 
@@ -102,7 +102,7 @@ describe('Config Screen component (not installed)', () => {
   });
 
   it('prevents the app from being installed if no service key file is provided', async () => {
-    await act(() => {
+    act(() => {
       render(<GoogleAnalyticsConfigPage />);
     });
 
@@ -131,7 +131,7 @@ describe('Installed Service Account Key', () => {
 
   it('overrides the saved values if a new key file is provided', async () => {
     const user = userEvent.setup();
-    await act(() => {
+    act(() => {
       render(<GoogleAnalyticsConfigPage />);
     });
 
